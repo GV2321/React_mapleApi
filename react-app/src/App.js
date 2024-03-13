@@ -3,7 +3,7 @@ import Header from './Header';
 import SearchBar from './SearchBar';
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm] = useState('');
 
   const handleSearch = () => {
     // 검색 기능을 위한 로직 추가

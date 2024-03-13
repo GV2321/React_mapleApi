@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { callCharacterApi, callCharacterStatApi } from './callCharacterApi';
 import callIdApi from './callIdApi';
 import getYesterdayDate from './DateUtils';
+import formatKoreanNumber from './formatKoreanNumber';
 
 
 function SearchBar() {
@@ -66,11 +67,10 @@ function SearchBar() {
   };
 
   // 필요한 stat_name에 따라 데이터를 추출합니다.
-  const 최소_스탯공격력 = getStatValue('최소 스탯공격력');
-  const 최대_스탯공격력 = getStatValue('최대 스탯공격력');
+  const 최소_스탯공격력 = formatKoreanNumber(getStatValue('최소 스탯공격력'));
+  const 최대_스탯공격력 = formatKoreanNumber(getStatValue('최대 스탯공격력'));
   const 데미지 = getStatValue('데미지');
   const 보스_몬스터_데미지 = getStatValue('보스 몬스터 데미지');
-  const 최종_데미지 = getStatValue('최종 데미지');
   const 방어율_무시 = getStatValue('방어율 무시');
 
 
@@ -95,6 +95,7 @@ function SearchBar() {
   const handleImageMouseOut = () => {
     setIsMouseOverImage(false);
   };
+  console.log(typeof 최대_스탯공격력);
 
   
 
@@ -136,24 +137,23 @@ function SearchBar() {
                   left: popupPosition.left,
                   background: 'white',
                   border: '1px solid #ccc',
-                  padding: '5px',
+                  padding: '10px',
                   zIndex: 1,
                   width: 'auto',
                   whiteSpace: 'nowrap', 
                 }}
               >
-                <p>스탯공격력 : {최소_스탯공격력}~{최대_스탯공격력} </p>
+                <p>스탯공격력 : {최소_스탯공격력} ~ {최대_스탯공격력} </p>
                 <p>데미지 : {데미지}% </p>
+                <p>보스 몬스터 데미지 : {보스_몬스터_데미지}% </p>
+                <p>방어율 무시 : {방어율_무시}% </p>
                 <p>보스 몬스터 데미지 : {보스_몬스터_데미지}% </p>
               </div>
             )}
           </div>
-          <p>캐릭터 이름: {charData.character_name}</p>
-          <p>레벨: {charData.character_level}</p>
-          <p>직업: {charData.character_class} ({charData.character_class_level}차)</p>
-          <p>월드: {charData.world_name}</p>
-          <p>길드: {charData.character_guild_name}</p>
-          <p>경험치: {charData.character_exp_rate}%</p>
+          <p>Lv. {charData.character_level} {charData.character_name} ({charData.character_exp_rate}%)</p>
+          <p>직업 : {charData.character_class} ({charData.character_class_level}차)</p>
+          <p>길드 : {charData.character_guild_name} ({charData.world_name})</p>
         </div>
       )}
     </div>
