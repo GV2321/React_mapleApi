@@ -14,11 +14,16 @@ function SearchBar() {
   const [roidData, setRoidData] = useState(null);
   const [presetNumber, setPresetNumber] = useState(1);
   const [itemPopupPositions, setItemPopupPositions] = useState({});
-  const [statPopupPosition, setStatPopupPosition] = useState({ top: 0, left: 0 });
+  const [roidPopupPosition, setRoidPopupPosition] = useState({});
+  const [statPopupPosition, setStatPopupPosition] = useState({});
   const [isItemHovered, setIsItemHovered] = useState(false);
   const [isStatHovered, setIsStatHovered] = useState(false);
+  const [isRoidHovered, setIsRoidHovered] = useState(false);
   const itemRefs = useRef({});
-  const statRef = useRef(null);
+  const roidRef = useRef({});
+  const statRef = useRef({});
+
+  const orderedKeys = ['attack_power', 'magic_power', 'boss_damage', 'ignore_monster_armor', 'damage', 'max_hp', 'max_mp', 'str', 'dex', 'int', 'luk', 'all_stat'];
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -41,12 +46,18 @@ function SearchBar() {
         const mouseY = e.clientY - rect.top;
         setStatPopupPosition({ top: mouseY, left: mouseX });
       }
+      if (isRoidHovered) {
+        const rect = roidRef.current.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        setRoidPopupPosition({ top: mouseY, left: mouseX });
+      }
     };
   
     const handleMouseOut = () => {
-      // Reset popup positions when mouse leaves the popup area
       setItemPopupPositions({});
-      setStatPopupPosition({ top: 0, left: 0 });
+      setStatPopupPosition({});
+      setRoidPopupPosition({});
     };
   
     document.addEventListener('mousemove', handleMouseMove);
@@ -56,7 +67,10 @@ function SearchBar() {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseout', handleMouseOut);
     };
-  }, [isItemHovered, isStatHovered]);
+  }, [isItemHovered, isStatHovered, isRoidHovered, itemPopupPositions]);
+
+  
+
 
   const handleSearch = async () => {
     if (characterName || selectedDate) {
@@ -94,19 +108,20 @@ function SearchBar() {
     return formatKoreanNumber(value);
   };
 
-  const handleItemHover = (e, itemName) => {
+  const handleItemHover = () => {
     setIsItemHovered(true);
-    const rect = e.target.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    setItemPopupPositions(prevPositions => ({
-      ...prevPositions,
-      [itemName]: { top: mouseY, left: mouseX }
-    }));
   };
 
   const handleItemHoverOut = () => {
     setIsItemHovered(false);
+  };
+
+  const handleRoidIconHover = (e) => {
+    setIsRoidHovered(true);
+  };
+  
+  const handleRoidIconHoverOut = () => {
+    setIsRoidHovered(false);
   };
 
   const handleStatHover = () => {
@@ -134,23 +149,41 @@ function SearchBar() {
           ref={(ref) => itemRefs.current[item.item_name] = ref}
           className="icon-item"
           onMouseOver={(e) => handleItemHover(e, item.item_name)}
-          onMouseOut={handleItemHoverOut}
-          style={{ position: 'relative', display: 'inline-block' }}
+          onMouseOut={handleItemHoverOut}          
+          style={{ position: 'relative', display: 'inline-block'}}
           data-item-id={item.item_name}
         >
           <img
-            src={item.item_shape_icon}
-            alt={item.item_shape_name}
+            src={item.item_icon}
+            alt={item.item_name}            
             style={{ width: 'auto'}}
           />
           {isItemHovered && itemPopupPositions[item.item_name] && (
-            <div className="item-popup"
+            <div className="popup"
               style={{
                 top: itemPopupPositions[item.item_name].top,
                 left: itemPopupPositions[item.item_name].left,
               }}
             >
-              <p>{item.item_name}</p>
+              <p><img src="/star.png" style={{ width: '15px' }} alt="Star" />{item.starforce} {item.item_name}</p>
+              {orderedKeys.map((key, index) => (
+                (item.item_total_option[key] !== '0' && item.item_total_option[key] !== 0) ? (
+                  <div key={index}>
+                    {key === 'attack_power' && <p>공격력 : {item.item_total_option[key]}</p>}
+                    {key === 'magic_power' && <p>마력 : {item.item_total_option[key]}</p>}
+                    {key === 'boss_damage' && <p>보공 : {item.item_total_option[key]}%</p>}
+                    {key === 'ignore_monster_armor' && <p>방무 : {item.item_total_option[key]}%</p>}
+                    {key === 'damage' && <p>데미지 : {item.item_total_option[key]}%</p>}
+                    {key === 'max_hp' && <p>최대 HP : {item.item_total_option[key]}</p>}
+                    {key === 'max_mp' && <p>최대 MP : {item.item_total_option[key]}</p>}
+                    {key === 'str' && <p>STR : {item.item_total_option[key]}</p>}
+                    {key === 'dex' && <p>DEX : {item.item_total_option[key]}</p>}
+                    {key === 'int' && <p>INT : {item.item_total_option[key]}</p>}
+                    {key === 'luk' && <p>LUK : {item.item_total_option[key]}</p>}
+                    {key === 'all_stat' && <p>올스탯 : {item.item_total_option[key]}%</p>}
+                  </div>
+                ) : null
+              ))}              
             </div>
           )}
         </div>
@@ -159,6 +192,8 @@ function SearchBar() {
       return <div className="icon-item"></div>;
     }
   };
+
+  
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -239,40 +274,112 @@ function SearchBar() {
           <button onClick={() => handlePresetClick(3)}>3</button>
         </div>
       </div>
-      <div className="icon-grid">
-        <div className="icon-item">{renderItemIcon('반지4')}</div> 
-        <div className="icon-item"></div> 
-        <div className="icon-item">{renderItemIcon('모자')}</div>
-        <div className="icon-item"></div> 
-        <div className="icon-item">{renderItemIcon('엠블렘')}</div>
-        <div className="icon-item">{renderItemIcon('반지3')}</div>
-        <div className="icon-item">{renderItemIcon('펜던트2')}</div>
-        <div className="icon-item">{renderItemIcon('얼굴장식')}</div>
-        <div className="icon-item"></div> 
-        <div className="icon-item">{renderItemIcon('뱃지')}</div>
-        <div className="icon-item">{renderItemIcon('반지2')}</div>
-        <div className="icon-item">{renderItemIcon('펜던트')}</div>
-        <div className="icon-item">{renderItemIcon('눈장식')}</div>
-        <div className="icon-item">{renderItemIcon('귀고리')}</div>
-        <div className="icon-item">{renderItemIcon('훈장')}</div>
-        <div className="icon-item">{renderItemIcon('반지1')}</div>
-        <div className="icon-item">{renderItemIcon('무기')}</div>
-        <div className="icon-item">{renderItemIcon('상의')}</div>
-        <div className="icon-item">{renderItemIcon('어깨장식')}</div>
-        <div className="icon-item">{renderItemIcon('보조무기')}</div>
-        <div className="icon-item">{renderItemIcon('포켓 아이템')}</div>
-        <div className="icon-item">{renderItemIcon('벨트')}</div>
-        <div className="icon-item">{renderItemIcon('하의')}</div>
-        <div className="icon-item">{renderItemIcon('장갑')}</div>
-        <div className="icon-item">{renderItemIcon('망토')}</div> 
-        <div className="icon-item"></div> 
-        <div className="icon-item"></div> 
-        <div className="icon-item">{renderItemIcon('신발')}</div>
+      <div className="icon-grid" style={{ marginTop: '20px' }}>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('반지4')}</div>
+        </div> 
+        <div className="icon-container">
+          <div className="icon-item"></div>
+        </div> 
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('모자')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item"></div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('엠블렘')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('반지3')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('펜던트2')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('얼굴장식')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item"></div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('뱃지')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('반지2')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('펜던트')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('눈장식')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('귀고리')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('훈장')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('반지1')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('무기')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('상의')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('어깨장식')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('보조무기')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('포켓 아이템')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('벨트')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('하의')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('장갑')}</div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('망토')}</div>
+        </div> 
+        <div className="icon-container">
+          <div className="icon-item"></div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item"></div>
+        </div>
+        <div className="icon-container">
+          <div className="icon-item">{renderItemIcon('신발')}</div>
+        </div>
+        <div className="icon-container" ref={roidRef}>
         {roidData && roidData.android_icon && (
-          <div className="icon-item">
-            <img src={roidData.android_icon} alt="안드로이드" />
+          <div className="icon-item"            
+            onMouseEnter={handleRoidIconHover}
+            onMouseOut={handleRoidIconHoverOut}
+            style={{ position: 'relative', display: 'inline-block' }}
+            >
+            <img src={roidData.android_icon}
+              alt="안드로이드" />
+            {isRoidHovered && (
+              <div className="popup"
+              style={{
+                top: roidPopupPosition.top,
+                left: roidPopupPosition.left,
+              }}>
+              <p>{roidData.android_name}</p>
+              </div>
+            )}
           </div>
         )}
+        </div>
         <div className="icon-item">{renderItemIcon('기계 심장')}</div>  
       </div>
     </div>
