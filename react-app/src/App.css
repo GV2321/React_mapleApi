@@ -49,6 +49,20 @@
   white-space: nowrap;
 }
 
+.itempopup {
+  position: absolute;
+  color: #d8d8d8;
+  background-color: rgba(48, 48, 48, 0.8);
+  border-radius: 5px;
+  border: 1px solid #000000;
+  padding: 10px;
+  z-Index: 1;
+  width: 250px;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+}
+
 .button-container {
   margin-top: 20px;
   display: flex;
@@ -96,4 +110,24 @@
   justify-content: center;
   width: 50px;
   height: 50px;
+}
+
+.popup-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.L-box {
+  margin-top: 2px;
+  height: 12px;
+  width: 12px;
+  border-radius: 2px;
+  border: 1px solid #000;
+  background-color: rgb(119, 238, 0);
+  text-align: center;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 9px;
+  color: #fff;
+  text-shadow: -1px -1px 0px #444, 1px -1px 0px #444, -1px 1px 0px #444, 1px 1px 0px #444;
 }

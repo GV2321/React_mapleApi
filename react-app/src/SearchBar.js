@@ -23,7 +23,6 @@ function SearchBar() {
   const roidRef = useRef({});
   const statRef = useRef({});
 
-  const orderedKeys = ['attack_power', 'magic_power', 'boss_damage', 'ignore_monster_armor', 'damage', 'max_hp', 'max_mp', 'str', 'dex', 'int', 'luk', 'all_stat'];
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -140,6 +139,10 @@ function SearchBar() {
     return presetItemData.find((item) => item.item_equipment_slot === itemSlot);
   };
 
+  
+
+
+
   const renderItemIcon = (itemSlot) => {
     const item = getItemDataBySlot(itemSlot);
     if (item) {
@@ -159,32 +162,254 @@ function SearchBar() {
             style={{ width: 'auto'}}
           />
           {isItemHovered && itemPopupPositions[item.item_name] && (
-            <div className="popup"
+            <div className="itempopup"
               style={{
                 top: itemPopupPositions[item.item_name].top,
                 left: itemPopupPositions[item.item_name].left,
               }}
             >
-              <p><img src="/star.png" style={{ width: '15px' }} alt="Star" />{item.starforce} {item.item_name}</p>
-              {orderedKeys.map((key, index) => (
-                (item.item_total_option[key] !== '0' && item.item_total_option[key] !== 0) ? (
-                  <div key={index}>
-                    {key === 'attack_power' && <p>공격력 : {item.item_total_option[key]}</p>}
-                    {key === 'magic_power' && <p>마력 : {item.item_total_option[key]}</p>}
-                    {key === 'boss_damage' && <p>보공 : {item.item_total_option[key]}%</p>}
-                    {key === 'ignore_monster_armor' && <p>방무 : {item.item_total_option[key]}%</p>}
-                    {key === 'damage' && <p>데미지 : {item.item_total_option[key]}%</p>}
-                    {key === 'max_hp' && <p>최대 HP : {item.item_total_option[key]}</p>}
-                    {key === 'max_mp' && <p>최대 MP : {item.item_total_option[key]}</p>}
-                    {key === 'str' && <p>STR : {item.item_total_option[key]}</p>}
-                    {key === 'dex' && <p>DEX : {item.item_total_option[key]}</p>}
-                    {key === 'int' && <p>INT : {item.item_total_option[key]}</p>}
-                    {key === 'luk' && <p>LUK : {item.item_total_option[key]}</p>}
-                    {key === 'all_stat' && <p>올스탯 : {item.item_total_option[key]}%</p>}
-                  </div>
-                ) : null
-              ))}              
+              <div class='itempopup-item'>
+                {item.starforce !== '0' || item.scroll_upgrade !== '0' ? (
+                  <p>
+                    {item.starforce !== '0' && `★${item.starforce} `}
+                    {item.item_name}
+                    {item.scroll_upgrade !== '0' && ` (+${item.scroll_upgrade})`}
+                  </p>
+                ) : (
+                  <p>
+                    {item.item_name}
+                  </p>
+                )}
+                {item.potential_option_grade !== null && (
+                  <p>({item.potential_option_grade} 아이템)</p>
+                )}
+              </div>
+              <div class='itempopup-item'>
+                <img src={item.item_icon} alt={item.item_name} style={{ width: '80px'}}/>
+              </div>
+              <div class='itempopup-item'>
+                {Object.entries(item.item_total_option).map(([key, value], index) => (
+                  (value !== '0' && value !== 0) ? (
+                    <div key={index}>
+                      {key === 'attack_power' && (
+                        <p>
+                          <span style={{ color: '#66FFFF' }}>공격력 : +{item.item_total_option[key]} </span>
+                          <span>({item.item_base_option[key]}</span>
+                          {item.item_add_option[key] !== '0' && (
+                            <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}</span>
+                          )}
+                          {item.item_etc_option[key] !== '0' && (
+                            <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}</span>
+                          )}
+                          {item.item_starforce_option[key] !== '0' && (
+                            <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}</span>
+                          )}
+                          )
+                        </p>
+                      )}
+                      {key === 'magic_power' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>마력 : +{item.item_total_option[key]} </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'boss_damage' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>보스 몬스터 공격 시 데미지 : +{item.item_total_option[key]}% </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}%</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}%</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}%</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'ignore_monster_armor' && (
+                        <p>몬스터 방어율 무시 : {item.item_total_option[key]}%</p>
+                      )}
+                      {key === 'damage' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>데미지 : +{item.item_total_option[key]}% </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}%</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}%</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}%</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'max_hp' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>최대 HP : +{item.item_total_option[key]} </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'max_mp' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>최대 MP : +{item.item_total_option[key]} </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'str' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>STR : +{item.item_total_option[key]} </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'dex' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>DEX : +{item.item_total_option[key]} </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'int' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>INT : +{item.item_total_option[key]} </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'luk' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>LUK : +{item.item_total_option[key]} </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}</span>
+                        )}
+                        {item.item_starforce_option[key] !== '0' && (
+                          <span style={{ color: '#FFCC00' }}>+{item.item_starforce_option[key]}</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                      {key === 'all_stat' && (
+                        <p>
+                        <span style={{ color: '#66FFFF' }}>올스탯 : +{item.item_total_option[key]}% </span>
+                        <span>({item.item_base_option[key]}</span>
+                        {item.item_add_option[key] !== '0' && (
+                          <span style={{ color: '#CCFF00' }}>+{item.item_add_option[key]}%</span>
+                        )}
+                        {item.item_etc_option[key] !== '0' && (
+                          <span style={{ color: '#AAAAFF' }}>+{item.item_etc_option[key]}%</span>
+                        )}
+                        )
+                      </p>
+                      )}
+                    </div>
+                  ) : null
+                ))}
+              </div>
+              <div class='itempopup-item'>
+              {item.potential_option_grade !== null && (
+                <>
+                {item.potential_option_grade === '레어' && (
+                  <p style={{ color: '#22BBFF' }}>
+                    잠재옵션                 
+                  </p>
+                )}
+          
+                {item.potential_option_grade === '에픽' && (
+                  <p style={{ color: '#AA11EE' }}>
+                    잠재옵션                 
+                  </p>
+                )}
+          
+                {item.potential_option_grade === '유니크' && (
+                  <p style={{ color: '#FFBB00' }}>
+                    잠재옵션                 
+                  </p>
+                )}
+          
+                {item.potential_option_grade === '레전드리' && (
+
+                    <p style={{ color: '#77EE00' }}>
+                      <div class='L-box'>L</div>
+                      <div style={{display: 'inline'}}>잠재옵션</div>
+                    </p>                 
+
+                )}
+                <p>
+                  <div>{item.potential_option_1}</div>
+                  <div>{item.potential_option_2}</div>
+                  <div>{item.potential_option_3}</div>
+                </p>
+              </>
+            )}
             </div>
+
+          </div>
           )}
         </div>
       );
